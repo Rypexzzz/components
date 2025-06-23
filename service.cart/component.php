@@ -18,9 +18,10 @@ $hi = HLBT::getById($HL_ROLES)->fetch();
 $e  = HLBT::compileEntity($hi);
 $res = $e->getDataClass()::getList(['select' => ['ID', 'UF_NAME', 'UF_RATE']]);
 while ($r = $res->fetch()) {
+    $rate = str_replace([' ', ','], ['', '.'], (string)$r['UF_RATE']);
     $rolesById[$r['ID']] = [
         'NAME' => $r['UF_NAME'],
-        'RATE' => (float)$r['UF_RATE']
+        'RATE' => (float)$rate
     ];
 }
 
