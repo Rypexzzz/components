@@ -116,7 +116,7 @@ if (window.__SERVICE_CATALOG_JS__) {
           if (ok) {
             btn.classList.toggle('sr-add', !add);
             btn.classList.toggle('sr-added', add);
-            btn.textContent = add ? '✓ Добавлено' : 'Добавить';
+            btn.textContent = add ? 'Добавлено' : 'Добавить';
             updSum(total);
           } else {
             alert('Сервер вернул некорректный ответ');
