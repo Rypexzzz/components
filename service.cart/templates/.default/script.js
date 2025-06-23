@@ -14,21 +14,12 @@ if (window.__SERVICE_CART_JS__) {
       const t = e.target.closest('.svc-toggle');
       if (t) {
         const card = t.closest('.svc-card');
-
-        if (currentOpenCard && currentOpenCard !== card) {
-          currentOpenCard.classList.remove('open');
-          const prevBtn = currentOpenCard.querySelector('.svc-toggle');
-          if (prevBtn) prevBtn.textContent = 'Читать подробнее';
-        }
-
         const body = card.querySelector('.svc-body');
         const open = card.classList.toggle('open');
         t.textContent = open ? 'Скрыть ▲' : 'Читать подробнее';
-        currentOpenCard = open ? card : null;
-
-        const detailBox = document.getElementById('detail-box');
 
         if (open) {
+          const detailBox = document.getElementById('detail-box');
           const serviceName = card.querySelector('.svc-name').textContent;
           const stageName = card.querySelector('.svc-tag').textContent;
           const bodyClone = body.cloneNode(true);
@@ -51,7 +42,7 @@ if (window.__SERVICE_CART_JS__) {
             detailBox.appendChild(table);
           }
         } else {
-          detailBox.innerHTML = '<p class="hint">Выберите «Читать подробнее» слева</p>';
+          document.getElementById('detail-box').innerHTML = '<p class="hint">Выберите «Читать подробнее» слева</p>';
         }
       }
 
