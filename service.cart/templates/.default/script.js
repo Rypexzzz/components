@@ -1,54 +1,120 @@
-/* Корзина услуг – редактирование, пересчёт, удаление */
-(() => {
-  const BX = window.BX;
+if (window.__SERVICE_CART_JS__) {
+  console.warn('service-cart: script already loaded');
+} else {
+  window.__SERVICE_CART_JS__ = true;
+  BX.ready(() => {
+    const fmt = n => Number(n).toLocaleString('ru-RU');
+    let currentOpenCard = null;
 
-  const fmt = n => Number(n).toLocaleString('ru-RU');
+    const debug = (...args) => {
+        console.log('[DEBUG]', ...args);
+    };
 
-  function updateTotals() {
-    let total = 0;
-    document.querySelectorAll('.svc-row').forEach(row => {
-      let svcSum = 0;
-      const svcId = row.dataset.id;
-      document.querySelectorAll('.role-row[data-service="'+svcId+'"] .cost-cell').forEach(c => {
-        svcSum += parseFloat(c.textContent.replace(/\s+/g,''));
-      });
-      row.querySelector('.svc-sum-val').textContent = fmt(svcSum);
-      total += svcSum;
+    document.addEventListener('click', e => {
+      const t = e.target.closest('.svc-toggle');
+      if (t) {
+        const card = t.closest('.svc-card');
+        const body = card.querySelector('.svc-body');
+        const open = card.classList.toggle('open');
+        t.textContent = open ? 'Скрыть ▲' : 'Читать подробнее';
+
+        if (open) {
+          const detailBox = document.getElementById('detail-box');
+          const serviceName = card.querySelector('.svc-name').textContent;
+          const stageName = card.querySelector('.svc-tag').textContent;
+          const bodyClone = body.cloneNode(true);
+
+          detailBox.innerHTML = '';
+          const title = document.createElement('h4');
+          title.textContent = `${stageName}: ${serviceName}`;
+          detailBox.appendChild(title);
+
+          const criteria = bodyClone.querySelector('.svc-criteria');
+          const comment = bodyClone.querySelector('.svc-comment');
+          if (criteria) detailBox.appendChild(criteria);
+          if (comment) detailBox.appendChild(comment);
+
+          const table = bodyClone.querySelector('.role-tbl');
+          if (table) {
+            const tableTitle = document.createElement('p');
+            tableTitle.innerHTML = '<strong>Состав услуги:</strong>';
+            detailBox.appendChild(tableTitle);
+            detailBox.appendChild(table);
+          }
+        } else {
+          document.getElementById('detail-box').innerHTML = '<p class="hint">Выберите «Читать подробнее» слева</p>';
+        }
+      }
+
+      const del = e.target.closest('.svc-remove');
+      if (del) {
+        const serviceId = del.dataset.id;
+        const card = del.closest('.svc-card');
+        BX.ajax.post(
+          location.href,
+          {ajax: 'Y', action: 'removeService', serviceId: serviceId},
+          () => {
+            card.style.opacity = '0';
+            card.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => {
+              card.remove();
+              recalculateGrandTotal();
+            }, 300);
+          }
+        );
+      }
+
+      if (e.target.closest('#btn-clear')) {
+        if (confirm('Удалить все необязательные услуги из корзины?')) {
+          BX.ajax.post(
+            location.href,
+            {ajax: 'Y', action: 'clearCart'},
+            () => {
+              document.querySelectorAll('.svc-card:not(.svc-lock)').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => card.remove(), 300);
+              });
+              setTimeout(recalculateGrandTotal, 350);
+            }
+          );
+        }
+      }
     });
-    document.getElementById('cart-total-val').textContent = fmt(total);
-  }
-  updateTotals();
 
-  /* изменение часов */
-  document.addEventListener('change', e => {
-    if (e.target.matches('.hours-input')) {
-      const input = e.target;
-      const hours = parseFloat(input.value);
-      const tr     = input.closest('tr');
-      const rate   = parseFloat(tr.dataset.rate);
-      const costEl = tr.querySelector('.cost-cell');
-      costEl.textContent = fmt(rate * hours);
-      updateTotals();
-      // ajax save
-      BX.ajax.runComponentAction('mycompany:service.cart','updateHours',{
-        mode:'class',
-        data:{ serviceId:input.dataset.service, roleId:input.dataset.role, hours:hours }
+    document.addEventListener('change', e => {
+      if (e.target.matches('.rl-hours')) {
+        const inp = e.target;
+        const h   = Math.max(0, +inp.value || 0); 
+        inp.value = h;
+        const tr   = inp.closest('.role-row');
+        const rate = +tr.dataset.rate;
+        tr.querySelector('.rl-cost').textContent = fmt(h * rate);
+        const card = tr.closest('.svc-card');
+        let s = 0; 
+        card.querySelectorAll('.role-row').forEach(r => {
+          const hours = r.querySelector('.rl-hours').value;
+          const rate = r.dataset.rate;
+          s += hours * rate;
+        });
+        card.querySelector('.svc-sum-val').textContent = fmt(s);
+        recalculateGrandTotal();
+        BX.ajax.post(location.href, {
+          ajax: 'Y',
+          action: 'updateHours',
+          serviceId: tr.dataset.service,
+          roleId: tr.dataset.role,
+          hours: h
+        });
+      }
+    });
+
+    function recalculateGrandTotal() {
+      let g = 0; 
+      document.querySelectorAll('.svc-sum-val').forEach(v => {
+        g += +v.textContent.replace(/\s+/g, '');
       });
+      document.getElementById('grand-val').textContent = fmt(g);
     }
   });
-
-  /* удаление услуги */
-  document.addEventListener('click', e => {
-    if (e.target.matches('.svc-remove')) {
-      const btn = e.target;
-      const svcId = btn.dataset.id;
-      BX.ajax.runComponentAction('mycompany:service.cart','removeService',{
-        mode:'class',data:{ serviceId:svcId }
-      }).then(()=>{
-        // удаляем из DOM
-        document.querySelectorAll('[data-service="'+svcId+'"], .svc-row[data-id="'+svcId+'"]').forEach(el=>el.remove());
-        updateTotals();
-      });
-    }
-  });
-})();
+}

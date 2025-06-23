@@ -1,58 +1,101 @@
-/* ───── фон рабочей области ───── */
-.workarea{
-  background:#F4F6FA;
-}
-
-/* ───── компонент ───── */
+/* ──────────────────────────────────────────────────────────────
+ *  ОБЩИЙ ЛЭЙАУТ
+ * ──────────────────────────────────────────────────────────── */
 .service-catalog{
-  background:transparent;         /* фон берёт .workarea */
-  padding:16px;
-  font:14px/1.4 Arial,sans-serif;
-  color:#000;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+}
+.catalog-head{padding-bottom:8px;}
+.catalog-scroll{
+  flex:1 1 auto;
+  overflow-y:auto;
+  padding-right:8px;
+  max-height:calc(100vh - 240px); /* высоту шапки можно подогнать */
 }
 
-/* фильтр / поиск */
-.sc-filter{display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
-.sc-select{padding:6px 10px;border:1px solid #c8cdd3;border-radius:4px;background:#fff;}
-.sc-search{flex:1 1 260px;min-width:180px;padding:6px 10px;border:1px solid #c8cdd3;border-radius:4px;}
-.sc-total{margin-left:auto;font-weight:700;color:#000;white-space:nowrap;}
-.sc-info{margin-bottom:10px;color:#333;font-style:italic;}
+/* ──────────────────────────────────────────────────────────────
+ *  ФИЛЬТР / ПОИСК
+ * ──────────────────────────────────────────────────────────── */
+.sc-filter{display:flex;gap:12px;align-items:center;margin-bottom:10px;flex-wrap:wrap;}
+.sc-select,.sc-search{padding:6px 10px;border:1px solid #c8cdd3;border-radius:4px;background:#fff;}
+.sc-search{flex:1 1 260px;min-width:180px;}
+.sc-total{margin-left:auto;font-weight:700;white-space:nowrap;}
+.sc-info{margin-bottom:8px;color:#333;font-style:italic;}
+.token{display:inline-flex;align-items:center;gap:4px;margin-right:8px;padding:2px 8px;border-radius:14px;background:#e1e7ff;font-size:13px;}
+.token button{border:none;background:transparent;cursor:pointer;font-weight:700;}
 
-/* вкладки */
-.sc-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
-.sc-tab{padding:4px 12px;border:1px solid #2b8cd4;border-radius:4px;background:#fff;color:#2b8cd4;cursor:pointer;}
-.sc-tab.is-active{background:#2b8cd4;color:#fff;}
+/* ──────────────────────────────────────────────────────────────
+ *  ХЛЕБНЫЕ КРОШКИ
+ * ──────────────────────────────────────────────────────────── */
+.stage-nav{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 14px;}
+.stage-nav__link{padding:4px 14px;border-radius:20px;background:#dfe7ff;color:#004269;font:600 15px/1 Arial,sans-serif;text-decoration:none;transition:background .2s;}
+.stage-nav__link:hover{background:#b7cbff;}
+.stage-nav__link.is-active{background:#8ab4ff;}
 
-/* ───── карточка услуги ───── */
+/* ──────────────────────────────────────────────────────────────
+ *  ЭТАП
+ * ──────────────────────────────────────────────────────────── */
+.stage-title{margin:16px 0 8px;font:600 18px Arial,sans-serif;color:#004269;}
+
+/* ──────────────────────────────────────────────────────────────
+ *  КАРТОЧКА УСЛУГИ
+ * ──────────────────────────────────────────────────────────── */
 .service-row{
   background:#fff;
   border:1px solid #dfe2e5;
-  border-radius:6px;
-  margin-bottom:10px;
+  border-radius:12px;
+  margin:0 0 6px;
   padding:8px 10px;
-  display:grid;grid-template-columns:auto 1fr auto auto;
-  gap:12px;align-items:center;
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  gap:12px;
+  align-items:center;
+}
+/* ↓ когда раскрыто */
+.service-row.sr-open{
+  margin-bottom:0;
+  border-radius:12px 12px 0 0;
 }
 .sr-btns{display:flex;gap:6px;}
-.sr-status,.sr-toggle{
-  padding:4px 12px;border:1px solid #c8cdd3;border-radius:4px;background:#f7f9fa;
-  cursor:pointer;font:13px/1 Arial,sans-serif;width:120px;height:24px;line-height:16px;text-align:center;
-}
+.sr-status,.sr-toggle{padding:4px 12px;border:1px solid #c8cdd3;border-radius:6px;background:#f7f9fa;cursor:pointer;font:13px/1 Arial,sans-serif;width:120px;height:24px;line-height:16px;text-align:center;}
 .sr-added{background:#4bb34b;color:#fff;border-color:#4bb34b;}
 .sr-required{background:#2b8cd4;color:#fff;border-color:#2b8cd4;cursor:default;}
 .sr-name{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;}
 .sr-tag{padding:2px 6px;border:1px solid #2b8cd4;border-radius:12px;color:#2b8cd4;font-size:12px;}
 .sr-cost{min-width:80px;text-align:right;font-weight:700;}
 
-/* ───── раскрытые детали ───── */
+/* ──────────────────────────────────────────────────────────────
+ *  ДЕТАЛИ УСЛУГИ
+ * ──────────────────────────────────────────────────────────── */
 .service-details{
-  background:#fff;border:1px solid #dfe2e5;border-top:none;border-radius:0 0 6px 6px;
+  background:#fff;
+  border:1px solid #dfe2e5;
+  border-top:none;
+  border-radius:0 0 12px 12px;
   padding:10px 12px 14px;
+  margin-bottom:6px;
+  display:none;
 }
+.service-details.is-visible{
+  display:block!important;
+  border-top:none; /* убираем линию между строкой и деталями */
+}
+/* если карточка открыта — у деталей уже есть своя нижняя рамка, поэтому
+   margin-top у следующей карточки остаётся */
 .sd-table{width:100%;border-collapse:collapse;}
-.sd-table th,
-.sd-table td{border-bottom:1px solid #e1e4e8;padding:4px 6px;font-size:13px;}
-.sd-table th{font-weight:700;background:#f0f6ff;}
+.sd-table th,.sd-table td{border-bottom:1px solid #e1e4e8;padding:4px 6px;font-size:13px;}
+.sd-table th{background:#f0f6ff;}
 .sd-hours{text-align:center;width:80px;}
-.sd-crit{width:240px;white-space:pre-line;font-size:12px;}
-.sd-comm{width:240px;white-space:pre-line;font-size:12px;}
+.sd-crit,.sd-comm{width:240px;white-space:pre-line;font-size:12px;}
+
+/* ──────────────────────────────────────────────────────────────
+ *  АДАПТИВ
+ * ──────────────────────────────────────────────────────────── */
+@media(max-width:600px){
+  .service-row{grid-template-columns:1fr auto;grid-template-areas:"name btn" "tag cost";}
+  .sr-name{grid-area:name;}
+  .sr-btns{grid-area:btn;}
+  .sr-tag{grid-area:tag;margin-top:6px;}
+  .sr-cost{grid-area:cost;margin-top:6px;}
+}
