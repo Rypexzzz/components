@@ -59,15 +59,15 @@ $inCart = $_SESSION['SERVICE_CART'] ?? [];
             <div class="sr-btns">
               <?php if ($svc['IS_REQUIRED']): ?>
                 <button class="sr-status sr-required" disabled>
-                  Обязательно
+                  🔒 Обязательно
                 </button>
               <?php else: ?>
                 <button class="sr-status <?= $inCartFlg ? 'sr-added' : 'sr-add' ?>"
                         data-id="<?= $id ?>">
-                  <?= $inCartFlg ? 'Добавлено' : 'Добавить' ?>
+                  <?= $inCartFlg ? '✓ Добавлено' : 'Добавить' ?>
                 </button>
               <?php endif; ?>
-              <button class="sr-toggle">Раскрыть ▼</button>
+              <button class="sr-toggle">Раскрыть ˅</button>
             </div>
             <span class="sr-name"><?= htmlspecialcharsbx($svc['NAME']) ?></span>
             <span class="sr-tag"><?= htmlspecialcharsbx($sec['NAME']) ?></span>

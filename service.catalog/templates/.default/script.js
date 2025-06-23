@@ -35,7 +35,7 @@ if (window.__SERVICE_CATALOG_JS__) {
         d.classList.remove('is-visible');
         d.previousElementSibling?.classList.remove('sr-open');
         const b = d.previousElementSibling?.querySelector('.sr-toggle');
-        if (b) b.textContent = 'Раскрыть ▼';
+        if (b) b.textContent = 'Раскрыть ˅';
       });
 
       rows.forEach(r => {
@@ -93,7 +93,7 @@ if (window.__SERVICE_CATALOG_JS__) {
         if (det) {
           const vis = det.classList.toggle('is-visible');
           row.classList.toggle('sr-open', vis);
-          tog.textContent = vis ? 'Скрыть ▲' : 'Раскрыть ▼';
+          tog.textContent = vis ? 'Скрыть ˄' : 'Раскрыть ˅';
           if (vis) det.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         return;
@@ -116,7 +116,7 @@ if (window.__SERVICE_CATALOG_JS__) {
           if (ok) {
             btn.classList.toggle('sr-add', !add);
             btn.classList.toggle('sr-added', add);
-            btn.textContent = add ? 'Добавлено' : 'Добавить';
+            btn.textContent = add ? '✓ Добавлено' : 'Добавить';
             updSum(total);
           } else {
             alert('Сервер вернул некорректный ответ');
